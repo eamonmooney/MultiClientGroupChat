@@ -1,18 +1,6 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.io.FileReader;
-import java.io.FileWriter;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
 
 public class Server {
 
@@ -48,19 +36,6 @@ public class Server {
         try {
             if (serverSocket != null)
             serverSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //NOT IN USE: Will log any chat messages that are sent to the server
-    public static void chatLog(HashMap<Integer, Message> message) {
-        Gson gson = new Gson();
-        String json = gson.toJson(message);
-
-        try (FileWriter writer = new FileWriter("chatlog.json")) {
-            writer.write(json);
-            System.out.println("Data saved to data.json");
         } catch (IOException e) {
             e.printStackTrace();
         }
