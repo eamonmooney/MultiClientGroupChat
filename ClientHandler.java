@@ -44,7 +44,7 @@ public class ClientHandler implements Runnable {
             //Adds the current clientHandler to the list
             clientHandlers.add(this);
 
-            broadcastMessage("SERVER: " + clientUsername + " has entered the chat!");
+            broadcastMessage("SERVER: " + clientUsername + " has entered the chat!", true);
 
             
         } catch (IOException e) {
@@ -59,7 +59,7 @@ public class ClientHandler implements Runnable {
         while (socket.isConnected()) {
             try {
                 messageFromClient = bufferedReader.readLine();
-                broadcastMessage(messageFromClient);
+                broadcastMessage(messageFromClient, false);
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
                 break;
@@ -68,18 +68,30 @@ public class ClientHandler implements Runnable {
     }
 
     //Sends messages to other clients
-    public void broadcastMessage(String messageToSend) {
+    public void broadcastMessage(String messageToSend, Boolean fromServer) {
         for (ClientHandler clientHandler : clientHandlers) {
             try {
-                //Sends the message to all clients but the sender
                 if (!clientHandler.clientUsername.equals(clientUsername)) {
                     clientHandler.bufferedWriter.write(messageToSend);
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();
-                }
-                else {
-                    Message message = new Message(clientHandler.clientUsername, messageToSend);
-                    writeLog(message);
+                } else {
+    
+                    //Split the Message Contents from the Username and contents by 2 columns            
+      
+                    String[] messageParts = messageToSend.split(":", 2);
+                    String actualMessage = messageParts.length > 1 ? messageParts[1].trim() : messageToSend;
+                  
+                    //Store the corresponding message as the final output
+    
+                    if (!fromServer) {
+                        Message message = new Message(clientHandler.clientUsername, actualMessage);
+                        writeLog(message);
+                    }
+                    else {
+                        Message message = new Message("SERVER", actualMessage);
+                        writeLog(message);
+                    }
                 }
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
@@ -88,8 +100,8 @@ public class ClientHandler implements Runnable {
     }
 
     public void removeClientHandler() {
+        broadcastMessage("SERVER: " + clientUsername + " has left the chat!", true);
         clientHandlers.remove(this);
-        broadcastMessage("SERVER: " + clientUsername + " has left the chat!");
     }
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
