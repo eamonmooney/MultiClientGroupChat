@@ -121,6 +121,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    //reads and returns the message log
     public HashMap<Integer, Message> readLog() {
         HashMap<Integer, Message> data = new HashMap<>();
 
@@ -135,6 +136,7 @@ public class ClientHandler implements Runnable {
         return data;
     }
 
+    //Writes a new message to the message log
     public synchronized void writeLog(Message message) {
         HashMap<Integer, Message> log = readLog();
         if (log == null) {
