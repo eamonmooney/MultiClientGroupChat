@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+//Class for the client, is ran here in order to add a new user.
 public class Client {
     
     private Socket socket;
@@ -25,6 +26,7 @@ public class Client {
         }
     }
 
+    //User sends a message to the server
     public void sendMessage() {
         try {
             bufferedWriter.write(username);
@@ -34,7 +36,12 @@ public class Client {
             Scanner scanner = new Scanner (System.in);
             while (socket.isConnected()) {
                 String messageToSend = scanner.nextLine();
-                bufferedWriter.write(username + ": " + messageToSend);
+                if (messageToSend.startsWith("/getMessage ")) {
+                    bufferedWriter.write(messageToSend);
+                }
+                else {
+                    bufferedWriter.write(username + ": " + messageToSend);
+                }
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
             }
@@ -43,6 +50,7 @@ public class Client {
         }
     }
 
+    //Method is actively listening for a message from the server, using threads allows for this to run alongside the process.
     public void listenForMessage() {
         new Thread(new Runnable() {
             @Override
@@ -61,6 +69,7 @@ public class Client {
         }).start();
     }
 
+    //Breaks connection with the server
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         try{
             if (bufferedReader != null) {

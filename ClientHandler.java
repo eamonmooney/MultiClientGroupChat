@@ -92,6 +92,9 @@ public class ClientHandler implements Runnable {
                         Message message = new Message("SERVER", actualMessage);
                         writeLog(message);
                     }
+                    if (actualMessage.startsWith("/getMessage ")) {
+                        getMessage(actualMessage);
+                    }
                 }
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
@@ -152,5 +155,13 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void getMessage(String messageFromClient) {
+        String[] parts = messageFromClient.split(" ");
+        int messageNumber = Integer.parseInt(parts[1]);
+        HashMap<Integer, Message> log = readLog();
+        Message message = log.get(messageNumber);
+        broadcastMessage("SERVER: " + message.getUsername() + " said: " + message.getContents(), true);
     }
 }
