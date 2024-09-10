@@ -69,36 +69,36 @@ public class ClientHandler implements Runnable {
 
     //Sends messages to other clients
     public void broadcastMessage(String messageToSend, Boolean fromServer) {
+        String sender = clientUsername;
         for (ClientHandler clientHandler : clientHandlers) {
             try {
                 if (!clientHandler.clientUsername.equals(clientUsername)) {
                     clientHandler.bufferedWriter.write(messageToSend);
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();
-                } else {
-    
-                    //Split the Message Contents from the Username and contents by 2 columns            
-      
-                    String[] messageParts = messageToSend.split(":", 2);
-                    String actualMessage = messageParts.length > 1 ? messageParts[1].trim() : messageToSend;
-                  
-                    //Store the corresponding message as the final output
-    
-                    if (!fromServer) {
-                        Message message = new Message(clientHandler.clientUsername, actualMessage);
-                        writeLog(message);
-                    }
-                    else {
-                        Message message = new Message("SERVER", actualMessage);
-                        writeLog(message);
-                    }
-                    if (actualMessage.startsWith("/getMessage ")) {
-                        getMessage(actualMessage);
-                    }
                 }
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
             }
+        }
+
+        //Split the Message Contents from the Username and contents by 2 columns            
+      
+        String[] messageParts = messageToSend.split(":", 2);
+        String actualMessage = messageParts.length > 1 ? messageParts[1].trim() : messageToSend;
+      
+        //Store the corresponding message as the final output
+
+        if (!fromServer) {
+            Message message = new Message(sender, actualMessage);
+            writeLog(message);
+        }
+        else {
+            Message message = new Message("SERVER", actualMessage);
+            writeLog(message);
+        }
+        if (actualMessage.startsWith("/getMessage ")) {
+            getMessage(actualMessage);
         }
     }
 
@@ -157,11 +157,21 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    //Searches through the message log to find the message requested.
     public void getMessage(String messageFromClient) {
         String[] parts = messageFromClient.split(" ");
         int messageNumber = Integer.parseInt(parts[1]);
         HashMap<Integer, Message> log = readLog();
         Message message = log.get(messageNumber);
         broadcastMessage("SERVER: " + message.getUsername() + " said: " + message.getContents(), true);
+        
+        //Output must also be sent back to the sendee as it is a command.
+        try {
+            bufferedWriter.write("SERVER: " + message.getUsername() + " said: " + message.getContents());
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            closeEverything(socket, bufferedReader, bufferedWriter);
+        }
     }
 }
