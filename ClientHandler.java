@@ -159,19 +159,68 @@ public class ClientHandler implements Runnable {
 
     //Searches through the message log to find the message requested.
     public void getMessage(String messageFromClient) {
-        String[] parts = messageFromClient.split(" ");
-        int messageNumber = Integer.parseInt(parts[1]);
-        HashMap<Integer, Message> log = readLog();
-        Message message = log.get(messageNumber);
-        broadcastMessage("SERVER: " + message.getUsername() + " said: " + message.getContents(), true);
-        
-        //Output must also be sent back to the sendee as it is a command.
         try {
+            String[] parts = messageFromClient.split(" ");
+
+            //Validate format
+            if (parts.length < 2) {
+                bufferedWriter.write("SERVER: Error: Invalid command format.");
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+                return;
+            }
+
+            int messageNumber;
+
+            //Validate number input
+            try {
+                messageNumber = Integer.parseInt(parts[1]);
+            } catch (NumberFormatException e) {
+                bufferedWriter.write("SERVER: Error: Invalid message number.");
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+                return;
+            }
+
+            //Retrive Message Log
+            HashMap<Integer, Message> log = readLog();
+
+            // Check if the message exists in the log
+            if (!log.containsKey(messageNumber)) {
+                bufferedWriter.write("SERVER: Error: Message not found.");
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+                return;
+            }
+
+            //Fetch the message
+            Message message = log.get(messageNumber);
+
+            //Broadcast the message to all clients
+            broadcastMessage("SERVER: " + message.getUsername() + " said: " + message.getContents(), true);
+            
+            //Send the output back to the requesting client as it is a command
             bufferedWriter.write("SERVER: " + message.getUsername() + " said: " + message.getContents());
             bufferedWriter.newLine();
             bufferedWriter.flush();
         } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            // Handle I/O exceptions
+            try {
+                bufferedWriter.write("SERVER: Error: Unable to retrieve message.");
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            } catch (IOException ex) {
+                closeEverything(socket, bufferedReader, bufferedWriter);
+            }
+            } catch (Exception e) {
+            // Catch any other unexpected exceptions
+            try {
+                bufferedWriter.write("SERVER: An unexpected error occurred.");
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            } catch (IOException ex) {
+                closeEverything(socket, bufferedReader, bufferedWriter);
+            }
         }
     }
 }
