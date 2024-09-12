@@ -223,4 +223,9 @@ public class ClientHandler implements Runnable {
             }
         }
     }
+
+    //Command to count how many messages a specific user has sent.
+    public void messageCount() {
+
+    }
 }
