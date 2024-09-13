@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -99,6 +100,9 @@ public class ClientHandler implements Runnable {
         }
         if (actualMessage.startsWith("/getMessage ")) {
             getMessage(actualMessage);
+        }
+        if (actualMessage.startsWith("/messageCount ")) {
+            messageCount(actualMessage);
         }
     }
 
@@ -225,7 +229,41 @@ public class ClientHandler implements Runnable {
     }
 
     //Command to count how many messages a specific user has sent.
-    public void messageCount() {
+    public void messageCount(String messageFromClient) {
+        String[] parts = messageFromClient.split(" ");
+        String requestedUsername;
+        requestedUsername = parts[1];
+        int counter = 0;
 
+        //Retrive Message Log
+        HashMap<Integer, Message> log = readLog();
+
+        for (Map.Entry<Integer, Message> message : log.entrySet()) {
+            String sender = message.getValue().getUsername();
+            if (sender == requestedUsername) {
+                counter++;
+            }
+        }
+        if (counter > 0) {
+            broadcastMessage("SERVER: " + counter + " messages found from " + requestedUsername, true); 
+            //Send the output back to the requesting client as it is a command
+            try {
+                bufferedWriter.write("SERVER: " + counter + " messages found from " + requestedUsername);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();  
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            broadcastMessage("SERVER: No messages found from " + requestedUsername, true);
+            //Send the output back to the requesting client as it is a command
+            try {
+                bufferedWriter.write("SERVER: No messages found from " + requestedUsername);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();  
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

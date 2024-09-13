@@ -37,7 +37,7 @@ public class Client {
             while (socket.isConnected()) {
                 String messageToSend = scanner.nextLine();
                 //Sends only the message typed to the server if using a command, so that it can be checked through a statement in the clientHandler
-                if (messageToSend.startsWith("/getMessage ")) {
+                if (messageToSend.startsWith("/getMessage ") || messageToSend.startsWith("/messageCount ")) {
                     bufferedWriter.write(messageToSend);
                 }
                 //Combines both the username and the typed message to show other clients who the message is from
