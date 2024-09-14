@@ -240,7 +240,7 @@ public class ClientHandler implements Runnable {
 
         for (Map.Entry<Integer, Message> message : log.entrySet()) {
             String sender = message.getValue().getUsername();
-            if (sender == requestedUsername) {
+            if (sender.equals(requestedUsername)) {
                 counter++;
             }
         }
