@@ -1,3 +1,4 @@
+//Class is used to store a messages sender and contents, primary use of this is for storing and loading from chatLog.json
 public class Message {
     private String username;
     private String contents;
