@@ -236,40 +236,41 @@ public class ClientHandler implements Runnable {
 
     //Command to count how many messages a specific user has sent.
     public void messageCount(String messageFromClient) {
-        String[] parts = messageFromClient.split(" ");
-        String requestedUsername;
-        requestedUsername = parts[1];
-        int counter = 0;
+        try {
+            String[] parts = messageFromClient.split(" ");
+            String requestedUsername = parts[1];
+            int counter = 0;
 
-        //Retrive Message Log
-        HashMap<Integer, Message> log = readLog();
+            //Validate input
+            if (requestedUsername.isEmpty()) {
+                sendError("Invalid username");
+            }
 
-        for (Map.Entry<Integer, Message> message : log.entrySet()) {
-            String sender = message.getValue().getUsername();
-            if (sender.equals(requestedUsername)) {
-                counter++;
+            //Retrive Message Log
+            HashMap<Integer, Message> log = readLog();
+
+            //Count how many messages the specified user has sent
+            for (Map.Entry<Integer, Message> message : log.entrySet()) {
+                String sender = message.getValue().getUsername();
+                if (sender.equals(requestedUsername)) {
+                    counter++;
+                }
             }
-        }
-        if (counter > 0) {
-            broadcastMessage("SERVER: " + counter + " messages found from " + requestedUsername, true); 
-            //Send the output back to the requesting client as it is a command
-            try {
-                bufferedWriter.write("SERVER: " + counter + " messages found from " + requestedUsername);
-                bufferedWriter.newLine();
-                bufferedWriter.flush();  
-            } catch (IOException e) {
-                e.printStackTrace();
+
+            if (counter > 0) {
+                String formattedMessage = "SERVER: " + counter + " messages found from " + requestedUsername;
+                broadcastMessage(formattedMessage, true); 
+                //Send the output back to the requesting client as it is a command
+                selfMessage(formattedMessage);
+            } else {
+                String formattedMessage = "SERVER: No messages found from " + requestedUsername;
+                broadcastMessage(formattedMessage, true);
+                //Send the output back to the requesting client as it is a command
+                selfMessage(formattedMessage);
             }
-        } else {
-            broadcastMessage("SERVER: No messages found from " + requestedUsername, true);
-            //Send the output back to the requesting client as it is a command
-            try {
-                bufferedWriter.write("SERVER: No messages found from " + requestedUsername);
-                bufferedWriter.newLine();
-                bufferedWriter.flush();  
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            // Catch any other unexpected exceptions
+            sendError("An unexpected error occurred.");
         }
     }
 }
