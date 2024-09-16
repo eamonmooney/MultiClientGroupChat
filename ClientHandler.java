@@ -161,6 +161,37 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    // Helper method to send error messages to the client
+    private void sendError(String errorMessage) {
+        try {
+            bufferedWriter.write("SERVER: Error: " + errorMessage);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        } catch (IOException ex) {
+            closeEverything(socket, bufferedReader, bufferedWriter);
+        }
+    }
+
+    // Helper method to send normal messages to the client
+    private void selfMessage(String message) {
+        try {
+            bufferedWriter.write(message);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        } catch (IOException ex) {
+            closeEverything(socket, bufferedReader, bufferedWriter);
+        }
+    }
+
+    // Helper method to parse a message number and handle invalid inputs
+    private int parseMessageNumber(String input) {
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            return -1;  // Indicate invalid message number
+        }
+    }
+
     //Searches through the message log to find the message requested.
     public void getMessage(String messageFromClient) {
         try {
@@ -168,32 +199,23 @@ public class ClientHandler implements Runnable {
 
             //Validate format
             if (parts.length < 2) {
-                bufferedWriter.write("SERVER: Error: Invalid command format.");
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
+                sendError("Invalid command format.");
                 return;
             }
-
-            int messageNumber;
 
             //Validate number input
-            try {
-                messageNumber = Integer.parseInt(parts[1]);
-            } catch (NumberFormatException e) {
-                bufferedWriter.write("SERVER: Error: Invalid message number.");
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
-                return;
-            }
+            int messageNumber = parseMessageNumber(parts[1]);
+            if (messageNumber == -1) {
+                sendError("Invalid message number.");
+            return;
+        }
 
             //Retrive Message Log
             HashMap<Integer, Message> log = readLog();
 
             // Check if the message exists in the log
             if (!log.containsKey(messageNumber)) {
-                bufferedWriter.write("SERVER: Error: Message not found.");
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
+                sendError("Message not found.");
                 return;
             }
 
@@ -201,30 +223,14 @@ public class ClientHandler implements Runnable {
             Message message = log.get(messageNumber);
 
             //Broadcast the message to all clients
-            broadcastMessage("SERVER: " + message.getUsername() + " said: " + message.getContents(), true);
+            String formattedMessage = "SERVER: " + message.getUsername() + " said: " + message.getContents();
+            broadcastMessage(formattedMessage, true);
             
             //Send the output back to the requesting client as it is a command
-            bufferedWriter.write("SERVER: " + message.getUsername() + " said: " + message.getContents());
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
-        } catch (IOException e) {
-            // Handle I/O exceptions
-            try {
-                bufferedWriter.write("SERVER: Error: Unable to retrieve message.");
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
-            } catch (IOException ex) {
-                closeEverything(socket, bufferedReader, bufferedWriter);
-            }
-            } catch (Exception e) {
+            selfMessage(formattedMessage);
+        } catch (Exception e) {
             // Catch any other unexpected exceptions
-            try {
-                bufferedWriter.write("SERVER: An unexpected error occurred.");
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
-            } catch (IOException ex) {
-                closeEverything(socket, bufferedReader, bufferedWriter);
-            }
+            sendError("An unexpected error occurred.");
         }
     }
 
