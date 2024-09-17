@@ -98,11 +98,16 @@ public class ClientHandler implements Runnable {
             Message message = new Message("SERVER", actualMessage);
             writeLog(message);
         }
-        if (actualMessage.startsWith("/getMessage ")) {
-            getMessage(actualMessage);
-        }
-        if (actualMessage.startsWith("/messageCount ")) {
-            messageCount(actualMessage);
+
+        //Check if the user has input a command and then checks if the command is valid, then executes the command.
+        if (actualMessage.startsWith("/")) {
+            if (actualMessage.startsWith("/getMessage ")) {
+                getMessage(actualMessage);
+            } else if (actualMessage.startsWith("/messageCount ")) {
+                messageCount(actualMessage);
+            } else {
+                sendError("Invalid Command.");
+            }
         }
     }
 
