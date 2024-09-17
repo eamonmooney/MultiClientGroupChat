@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +21,13 @@ public class ClientHandler implements Runnable {
     
     //Keeps track of all of the clients, allows the capability to broadcast messages to multiple users
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+
+    //ArrayList of all the commands that can be used by the client, complete with their own descriptions.
+    public static ArrayList<String> commands = new ArrayList<>(Arrays.asList(
+        "/help - Displays all commands that are currently available.", 
+        "/getMessage <Number> - Displays the requested message by message number.",
+        "/messageCount <Username> - Displays how many messages have been sent by the requested username."
+    ));
     
     //Establishes a connection between the client and the server.
     private Socket socket;
@@ -105,6 +113,8 @@ public class ClientHandler implements Runnable {
                 getMessage(actualMessage);
             } else if (actualMessage.startsWith("/messageCount ")) {
                 messageCount(actualMessage);
+            } else if (actualMessage.startsWith("/help")) {
+                help();
             } else {
                 sendError("Invalid Command.");
             }
@@ -194,6 +204,19 @@ public class ClientHandler implements Runnable {
             return Integer.parseInt(input);
         } catch (NumberFormatException e) {
             return -1;  // Indicate invalid message number
+        }
+    }
+
+    //Displays all avalible commands to the user.
+    public void help() {
+        try {
+            selfMessage("SERVER: Here is a following list of available commands.");
+            for (String command : commands) {
+                selfMessage(command);
+            }
+        }   catch (Exception e) {
+            // Catch any other unexpected exceptions
+            sendError("An unexpected error occurred.");
         }
     }
 
