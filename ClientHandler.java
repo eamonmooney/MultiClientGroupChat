@@ -65,6 +65,7 @@ public class ClientHandler implements Runnable {
     public void run() {
         String messageFromClient;
 
+        //While the client is connected to the server, listen out for any incoming messages 
         while (socket.isConnected()) {
             try {
                 messageFromClient = bufferedReader.readLine();
