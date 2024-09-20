@@ -122,6 +122,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    //Removes a client from the server
     public void removeClientHandler() {
         broadcastMessage("SERVER: " + clientUsername + " has left the chat!", true);
         clientHandlers.remove(this);
