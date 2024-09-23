@@ -38,6 +38,7 @@ public class ClientHandler implements Runnable {
     //Used to send data, such as messages to the client.
     private BufferedWriter bufferedWriter;
 
+    //current clients username
     private String clientUsername;
 
     public ClientHandler(Socket socket) {
