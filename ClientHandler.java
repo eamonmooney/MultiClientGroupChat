@@ -26,7 +26,9 @@ public class ClientHandler implements Runnable {
     public static ArrayList<String> commands = new ArrayList<>(Arrays.asList(
         "/help - Displays all commands that are currently available.", 
         "/getMessage <Number> - Displays the requested message by message number.",
-        "/messageCount <Username> - Displays how many messages have been sent by the requested username."
+        "/messageCount <Username> - Displays how many messages have been sent by the requested username.",
+        "/messageDelete <Number> - Deletes the requested message, You can only delete your own messages. [IN DEVELOPMENT]",
+        "/messageEdit <Number> <Message> - Edits the requested message, You can only edit your own messages. [IN DEVELOPMENT]"
     ));
     
     //Establishes a connection between the client and the server.
