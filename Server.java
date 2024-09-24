@@ -41,6 +41,8 @@ public class Server {
         }
     }
 
+    //Server and Client must connect through the same port.
+    //Server must be ran first in order for the client to connect
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(1234);
         Server server = new Server(serverSocket);
