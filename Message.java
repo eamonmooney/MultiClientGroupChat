@@ -8,11 +8,6 @@ public class Message {
         this.contents = contents;
     }
 
-    public String getUsername(){
-        return username;
-    }
-
-    public String getContents(){
-        return contents;
-    }
+    public String getUsername(){return username;}
+    public String getContents(){return contents;}
 }

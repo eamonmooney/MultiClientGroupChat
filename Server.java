@@ -14,9 +14,7 @@ public class Server {
 
     //Starts the server
     public void startServer() {
-
         try {
-
             while (!serverSocket.isClosed()) {
 
                 Socket socket = serverSocket.accept();
@@ -26,9 +24,7 @@ public class Server {
                 Thread thread = new Thread(clientHandler);
                 thread.start();
             }
-        } catch (IOException e) {
-
-        }
+        } catch (IOException e) {}
     }
 
     //Closes the Server
