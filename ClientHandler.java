@@ -307,4 +307,12 @@ public class ClientHandler implements Runnable {
             sendError("An unexpected error occurred.");
         }
     }
+
+    //New commands to be implemented
+    public void messageDelete(Integer key) {
+
+    }
+    public void messageEdit(Integer key, String newMessage) {
+
+    }
 }
