@@ -28,7 +28,8 @@ public class ClientHandler implements Runnable {
         "/getMessage <Number> - Displays the requested message by message number.",
         "/messageCount <Username> - Displays how many messages have been sent by the requested username.",
         "/messageDelete <Number> - Deletes the requested message, You can only delete your own messages. [IN DEVELOPMENT]",
-        "/messageEdit <Number> <Message> - Edits the requested message, You can only edit your own messages. [IN DEVELOPMENT]"
+        "/messageEdit <Number> <Message> - Edits the requested message, You can only edit your own messages. [IN DEVELOPMENT]",
+        "/translate <Number> <Language> - Translates a message to the requested language [IN DEVELOPMENT]"
     ));
     
     //Establishes a connection between the client and the server.
@@ -313,6 +314,9 @@ public class ClientHandler implements Runnable {
 
     }
     public void messageEdit(Integer key, String newMessage) {
+
+    }
+    public void translate(Integer key, String language) {
 
     }
 }
