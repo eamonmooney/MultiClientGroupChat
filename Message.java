@@ -10,4 +10,6 @@ public class Message {
 
     public String getUsername(){return username;}
     public String getContents(){return contents;}
+    public void setUsername(String username){this.username = username;}
+    public void setContents(String username){this.username = username;}
 }
