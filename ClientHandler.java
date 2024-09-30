@@ -120,6 +120,8 @@ public class ClientHandler implements Runnable {
                 messageCount(actualMessage);
             } else if (actualMessage.startsWith("/help")) {
                 help();
+            } else if (actualMessage.startsWith("/messageDelete")) {
+                messageDelete(actualMessage);
             } else {
                 sendError("Invalid Command.");
             }
@@ -173,6 +175,20 @@ public class ClientHandler implements Runnable {
         }
         int nextIndex = log.keySet().stream().max(Integer::compare).orElse(-1) + 1;
         log.put(nextIndex,message);
+        Gson gson = new Gson();
+        String json = gson.toJson(log);
+
+        try (FileWriter writer = new FileWriter("chatLog.json")) {
+            writer.write(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Edits an existing message in the log
+    public synchronized void editLog(Integer key, Message newMessage) {
+        HashMap<Integer, Message> log = readLog();
+        log.replace(key, newMessage);
         Gson gson = new Gson();
         String json = gson.toJson(log);
 
@@ -242,8 +258,8 @@ public class ClientHandler implements Runnable {
             int messageNumber = parseMessageNumber(parts[1]);
             if (messageNumber == -1) {
                 sendError("Invalid message number.");
-            return;
-        }
+                return;
+            }
 
             //Retrive Message Log
             HashMap<Integer, Message> log = readLog();
@@ -309,9 +325,40 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    //New commands to be implemented
-    public void messageDelete(Integer key) {
+    //Deletes the reuested message
+    public void messageDelete(String messageFromClient) {
+        try {
+            String[] parts = messageFromClient.split(" ");
+            //Validate format
+            if (parts.length < 2) {
+                sendError("Invalid command format.");
+                return;
+            }
+            //Validate number input
+            int messageNumber = parseMessageNumber(parts[1]);
+            if (messageNumber == -1) {
+                sendError("Invalid message number.");
+                return;
+            }
+            //Retrive Message Log
+            HashMap<Integer, Message> log = readLog();
+            // Check if the message exists in the log
+            if (!log.containsKey(messageNumber)) {
+                sendError("Message not found.");
+                return;
+            }
+            //Fetch the message
+            Message message = log.get(messageNumber);
 
+            //Create new message
+            Message newMessage = new Message(message.getUsername(), "<Message Deleted>");
+            editLog(messageNumber, newMessage);
+
+            selfMessage("SERVER: Message has been deleted.");
+        } catch (Exception e) {
+            //Catch any other unexpected exceptions
+            sendError("An unexpected error occurred.");
+        }
     }
     public void messageEdit(Integer key, String newMessage) {
 
