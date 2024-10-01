@@ -199,6 +199,31 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    //Validates the given integer to check if it exists in the log
+    public boolean logValidation(Integer key) {
+        try {
+            //Validate number input
+            if (key == -1) {
+                sendError("Invalid message number.");
+                return false;
+            }
+
+            //Retrive Message Log
+            HashMap<Integer, Message> log = readLog();
+
+            // Check if the message exists in the log
+            if (!log.containsKey(key)) {
+                sendError("Message not found.");
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            // Catch any other unexpected exceptions
+            sendError("An unexpected error occurred.");
+            return false;
+        }
+    }
+
     // Helper method to send error messages to the client
     private void sendError(String errorMessage) {
         try {
@@ -254,24 +279,18 @@ public class ClientHandler implements Runnable {
                 return;
             }
 
-            //Validate number input
-            int messageNumber = parseMessageNumber(parts[1]);
-            if (messageNumber == -1) {
-                sendError("Invalid message number.");
+            Integer key = parseMessageNumber(parts[1]);
+
+            //Validate log existence
+            if (!logValidation(key)){
                 return;
             }
 
             //Retrive Message Log
             HashMap<Integer, Message> log = readLog();
 
-            // Check if the message exists in the log
-            if (!log.containsKey(messageNumber)) {
-                sendError("Message not found.");
-                return;
-            }
-
             //Fetch the message
-            Message message = log.get(messageNumber);
+            Message message = log.get(key);
 
             //Broadcast the message to all clients
             String formattedMessage = "SERVER: " + message.getUsername() + " said: " + message.getContents();
@@ -325,34 +344,33 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    //Deletes the reuested message
+    //Deletes the requested message
     public void messageDelete(String messageFromClient) {
         try {
             String[] parts = messageFromClient.split(" ");
+
             //Validate format
             if (parts.length < 2) {
                 sendError("Invalid command format.");
                 return;
             }
-            //Validate number input
-            int messageNumber = parseMessageNumber(parts[1]);
-            if (messageNumber == -1) {
-                sendError("Invalid message number.");
+
+            Integer key = parseMessageNumber(parts[1]);
+
+            //Validate log existence
+            if (!logValidation(key)){
                 return;
             }
+
             //Retrive Message Log
             HashMap<Integer, Message> log = readLog();
-            // Check if the message exists in the log
-            if (!log.containsKey(messageNumber)) {
-                sendError("Message not found.");
-                return;
-            }
+
             //Fetch the message
-            Message message = log.get(messageNumber);
+            Message message = log.get(key);
 
             //Create new message
             Message newMessage = new Message(message.getUsername(), "<Message Deleted>");
-            editLog(messageNumber, newMessage);
+            editLog(key, newMessage);
 
             selfMessage("SERVER: Message has been deleted.");
         } catch (Exception e) {
@@ -360,6 +378,7 @@ public class ClientHandler implements Runnable {
             sendError("An unexpected error occurred.");
         }
     }
+    
     public void messageEdit(Integer key, String newMessage) {
 
     }
