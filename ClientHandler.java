@@ -379,9 +379,12 @@ public class ClientHandler implements Runnable {
         }
     }
     
+    //Edits the requested message
     public void messageEdit(Integer key, String newMessage) {
 
     }
+
+    //Translate the requested message
     public void translate(Integer key, String language) {
 
     }
