@@ -134,7 +134,7 @@ public class ClientHandler implements Runnable {
         clientHandlers.remove(this);
     }
 
-    //Closes everything :)
+    //Closes everything
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         removeClientHandler();
         try{
