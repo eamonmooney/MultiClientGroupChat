@@ -1,6 +1,6 @@
 ###### A CLI Program that allows Clients to intereact with eachother through messages.
 
-- Currently only avalible locally
+- Currently only avalible locally :(
 
 ###### Startup
 1. Run Server.java
@@ -8,7 +8,7 @@
 3. Input the client's username
 4. You can now send and read messages to and from other clients!
 
-######Command List:
+###### Command List:
 
 ##### /Help
   - Displays all commands that are currently available.
