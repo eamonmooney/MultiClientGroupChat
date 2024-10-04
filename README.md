@@ -1,11 +1,11 @@
-###### A CLI Program that allows Clients to intereact with eachother through messages.
+###### A CLI Program that allows clients to interact with each other through messages.
 
-- Currently only avalible locally :(
+- Currently only available locally. :(
 
 ###### Startup
-1. Run Server.java
-2. Run as many Client.java instantces as you wish
-3. Input the client's username
+1. Run `Server.java`
+2. Run as many `Client.java` instantces as you wish.
+3. Input the client's username.
 4. You can now send and read messages to and from other clients!
 
 ###### Command List:
@@ -30,4 +30,4 @@
   - Translates a message to the requested language
   - IN DEVELOPMENT
 
-If you have any ideas on how i can improve this program (aka potential features) feel free to Message me on Discord: "sirnyges"
+If you have any ideas on how I can improve this program (e.g., potential features), feel free to message me on Discord: "sirnyges."
