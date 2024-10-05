@@ -22,12 +22,12 @@
 ##### /messageDelete <Number>
   - Deletes the requested message, You can only delete your own messages.
 
+IN DEVELOPMENT:
+
 ##### /messageEdit <Number> <Message>
   - Edits the requested message, You can only edit your own messages.
-  - IN DEVELOPMENT
 
 ##### /translate <Number> <Language>
   - Translates a message to the requested language
-  - IN DEVELOPMENT
 
 If you have any ideas on how I can improve this program (e.g., potential features), feel free to message me on Discord: "sirnyges."
