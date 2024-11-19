@@ -152,6 +152,10 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    //IMPORTANT NOTE ON THE LOG: Apparently Hashtables are thread-safe and syncronised? Might be more worth it to use this instead of the HashMap
+    //SUB NOTE ON THE IMPORTANT NOTE: Do actually look at what a hashtable is
+
+    
     //reads and returns the message log
     public HashMap<Integer, Message> readLog() {
         HashMap<Integer, Message> data = new HashMap<>();
