@@ -1,3 +1,5 @@
+![image](https://github.com/user-attachments/assets/28f08428-133b-415f-8c92-c0022c7502a6)
+
 ###### A CLI Program that allows clients to interact with each other through messages.
 
 - Currently only available locally. :(
