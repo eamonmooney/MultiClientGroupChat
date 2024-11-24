@@ -29,6 +29,9 @@ IN DEVELOPMENT:
 ##### /messageEdit <Number> <Message>
   - Edits the requested message, You can only edit your own messages.
 
+##### /messageRandom <Username>
+  - Outputs a random message from the specified user.
+
 ##### /translate <Number> <Language>
   - Translates a message to the requested language
 
