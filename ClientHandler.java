@@ -27,7 +27,7 @@ public class ClientHandler implements Runnable {
         "/help - Displays all commands that are currently available.", 
         "/getMessage <Number> - Displays the requested message by message number.",
         "/messageCount <Username> - Displays how many messages have been sent by the requested username.",
-        "/messageDelete <Number> - Deletes the requested message, You can only delete your own messages. [IN DEVELOPMENT]",
+        "/messageDelete <Number> - Deletes the requested message, You can only delete your own messages.",
         "/messageEdit <Number> <Message> - Edits the requested message, You can only edit your own messages. [IN DEVELOPMENT]",
         "/messageRandom <Username> - Outputs a random message from the specified user. [IN DEVELOPMENT]",
         "/translate <Number> <Language> - Translates a message to the requested language [IN DEVELOPMENT]"
