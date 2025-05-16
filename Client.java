@@ -97,4 +97,3 @@ public class Client {
         client.sendMessage();
     }
 }
-//mobile commit :D
