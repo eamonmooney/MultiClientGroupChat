@@ -392,10 +392,4 @@ public class ClientHandler implements Runnable {
     public void messageRandom(String messageFromClient) {
 
     }
-
-    //Splits the given text by a space (Used for commands)
-    public String[] splitString(String messageFromClient) {
-        String[] parts = messageFromClient.split(" ");
-        return parts;
-    }
 }
