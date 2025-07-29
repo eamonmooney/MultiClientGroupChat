@@ -29,8 +29,7 @@ public class ClientHandler implements Runnable {
         "/messageCount <Username> - Displays how many messages have been sent by the requested username.",
         "/messageDelete <Number> - Deletes the requested message, You can only delete your own messages.",
         "/messageEdit <Number> <Message> - Edits the requested message, You can only edit your own messages. [IN DEVELOPMENT]",
-        "/messageRandom <Username> - Outputs a random message from the specified user. [IN DEVELOPMENT]",
-        "/translate <Number> <Language> - Translates a message to the requested language [IN DEVELOPMENT]"
+        "/messageRandom <Username> - Outputs a random message from the specified user. [IN DEVELOPMENT]"
     ));
     
     //Establishes a connection between the client and the server.
@@ -391,11 +390,6 @@ public class ClientHandler implements Runnable {
 
     //Outputs a random message from the specified user.
     public void messageRandom(String messageFromClient) {
-
-    }
-
-    //Translate the requested message
-    public void translate(Integer key, String language) {
 
     }
 
