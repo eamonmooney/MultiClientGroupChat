@@ -272,41 +272,30 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    //Searches through the message log to find the message requested.
+    // Searches through the message log to find the message requested.
     public void getMessage(String messageFromClient) {
         try {
-            String[] parts = messageFromClient.split(" ");
+            HashMap<Integer, Message> fetchedMessage = messageFetch(messageFromClient);
 
-            //Validate format
-            if (parts.length < 2) {
-                sendError("Invalid command format.");
+            if (fetchedMessage == null || fetchedMessage.isEmpty()) {
+                sendError("Message not found.");
                 return;
             }
 
-            Integer key = parseMessageNumber(parts[1]);
+            // Get the message
+            Map.Entry<Integer, Message> entry = fetchedMessage.entrySet().iterator().next();
+            Message message = entry.getValue();
 
-            //Validate log existence
-            if (!logValidation(key)){
-                return;
-            }
-
-            //Retrive Message Log
-            HashMap<Integer, Message> log = readLog();
-
-            //Fetch the message
-            Message message = log.get(key);
-
-            //Broadcast the message to all clients
+            // Format and broadcast the message
             String formattedMessage = "SERVER: " + message.getUsername() + " said: " + message.getContents();
             broadcastMessage(formattedMessage, true);
-            
-            //Send the output back to the requesting client as it is a command
             selfMessage(formattedMessage);
         } catch (Exception e) {
             // Catch any other unexpected exceptions
             sendError("An unexpected error occurred.");
         }
     }
+
 
     //Command to count how many messages a specific user has sent.
     public void messageCount(String messageFromClient) {
@@ -348,41 +337,29 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    //Deletes the requested message
     public void messageDelete(String messageFromClient) {
         try {
-            String[] parts = messageFromClient.split(" ");
+            HashMap<Integer, Message> fetchedMessage = messageFetch(messageFromClient);
 
-            //Validate format
-            if (parts.length < 2) {
-                sendError("Invalid command format.");
+            if (fetchedMessage == null || fetchedMessage.isEmpty()) {
+                sendError("No message found to delete.");
                 return;
             }
 
-            Integer key = parseMessageNumber(parts[1]);
+            Map.Entry<Integer, Message> entry = fetchedMessage.entrySet().iterator().next();
+            int key = entry.getKey();
+            Message originalMessage = entry.getValue();
 
-            //Validate log existence
-            if (!logValidation(key)){
-                return;
-            }
-
-            //Retrive Message Log
-            HashMap<Integer, Message> log = readLog();
-
-            //Fetch the message
-            Message message = log.get(key);
-
-            //Create new message
-            Message newMessage = new Message(message.getUsername(), "<Message Deleted>");
+            // Create new 'deleted' message
+            Message newMessage = new Message(originalMessage.getUsername(), "<Message Deleted>");
             editLog(key, newMessage);
 
             selfMessage("SERVER: Message has been deleted.");
         } catch (Exception e) {
-            //Catch any other unexpected exceptions
             sendError("An unexpected error occurred.");
         }
     }
-    
+
     //Edits the requested message
     public void messageEdit(Integer key, String newMessage) {
 
@@ -391,5 +368,34 @@ public class ClientHandler implements Runnable {
     //Outputs a random message from the specified user.
     public void messageRandom(String messageFromClient) {
 
+    }
+
+    //Checks to see if a requested message number exists, then returns the message as a HashMap with its key
+    public HashMap<Integer, Message> messageFetch(String messageFromClient) {
+        String[] parts = messageFromClient.split(" ");
+
+        //Validate format
+        if (parts.length < 2) {
+            sendError("Invalid command format.");
+            return null;
+        }
+
+        Integer key = parseMessageNumber(parts[1]);
+
+        //Validate log existence
+        if (!logValidation(key)){
+            return null;
+        }
+
+        //Retrive Message Log
+        HashMap<Integer, Message> log = readLog();
+
+        //Fetch the message
+        Message message = log.get(key);
+
+        //Store the fetched message in a HashMap so the key is also kept
+        HashMap<Integer, Message> fetchedMessage = new HashMap<Integer, Message>();
+        fetchedMessage.put(key, message);
+        return fetchedMessage;
     }
 }
