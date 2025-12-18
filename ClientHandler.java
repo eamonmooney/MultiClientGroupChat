@@ -34,7 +34,7 @@ public class ClientHandler implements Runnable {
     //Used to send data, such as messages to the client.
     private BufferedWriter bufferedWriter;
 
-    //current clients username
+    //Current clients username
     private String clientUsername;
 
     public ClientHandler(Socket socket) {
@@ -54,7 +54,7 @@ public class ClientHandler implements Runnable {
 
 
         } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            ConnectionUtils.closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
 
@@ -68,7 +68,7 @@ public class ClientHandler implements Runnable {
                 messageFromClient = bufferedReader.readLine();
                 broadcastMessage(messageFromClient, false);
             } catch (IOException e) {
-                closeEverything(socket, bufferedReader, bufferedWriter);
+                ConnectionUtils.closeEverything(socket, bufferedReader, bufferedWriter);
                 break;
             }
         }
@@ -85,7 +85,7 @@ public class ClientHandler implements Runnable {
                     clientHandler.bufferedWriter.flush();
                 }
             } catch (IOException e) {
-                closeEverything(socket, bufferedReader, bufferedWriter);
+                ConnectionUtils.closeEverything(socket, bufferedReader, bufferedWriter);
             }
         }
 
@@ -126,29 +126,7 @@ public class ClientHandler implements Runnable {
         clientHandlers.remove(this);
     }
 
-    //Closes everything
-    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
-        removeClientHandler();
-        try {
-            if (bufferedReader != null) {
-                bufferedReader.close();
-            }
-            if (bufferedWriter != null) {
-                bufferedWriter.close();
-            }
-            if (socket != null) {
-                socket.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //IMPORTANT NOTE ON THE LOG: Apparently Hashtables are thread-safe and syncronised? Might be more worth it to use this instead of the HashMap
-    //SUB NOTE ON THE IMPORTANT NOTE: Do actually look at what a hashtable is
-
-
-    //reads and returns the message log
+    //Reads and returns the message log
     public HashMap<Integer, Message> readLog() {
         HashMap<Integer, Message> data = new HashMap<>();
 
@@ -221,29 +199,29 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    // Helper method to send error messages to the client
+    //Helper method to send error messages to the client
     private void sendError(String errorMessage) {
         try {
             bufferedWriter.write("SERVER: Error: " + errorMessage);
             bufferedWriter.newLine();
             bufferedWriter.flush();
         } catch (IOException ex) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            ConnectionUtils.closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
 
-    // Helper method to send normal messages to the client
+    //Helper method to send normal messages to the client
     private void selfMessage(String message) {
         try {
             bufferedWriter.write(message);
             bufferedWriter.newLine();
             bufferedWriter.flush();
         } catch (IOException ex) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            ConnectionUtils.closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
 
-    // Helper method to parse a message number and handle invalid inputs
+    //Helper method to parse a message number and handle invalid inputs
     private int parseMessageNumber(String input) {
         try {
             return Integer.parseInt(input);
@@ -265,7 +243,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    // Searches through the message log to find the message requested.
+    //Searches through the message log to find the message requested.
     public void getMessage(String messageFromClient) {
         try {
             HashMap<Integer, Message> fetchedMessage = messageFetch(messageFromClient);
@@ -275,16 +253,16 @@ public class ClientHandler implements Runnable {
                 return;
             }
 
-            // Get the message
+            //Get the message
             Map.Entry<Integer, Message> entry = fetchedMessage.entrySet().iterator().next();
             Message message = entry.getValue();
 
-            // Format and broadcast the message
+            //Format and broadcast the message
             String formattedMessage = "SERVER: " + message.getUsername() + " said: " + message.getContents();
             broadcastMessage(formattedMessage, true);
             selfMessage(formattedMessage);
         } catch (Exception e) {
-            // Catch any other unexpected exceptions
+            //Catch any other unexpected exceptions
             sendError("An unexpected error occurred.");
         }
     }
@@ -325,7 +303,7 @@ public class ClientHandler implements Runnable {
                 selfMessage(formattedMessage);
             }
         } catch (Exception e) {
-            // Catch any other unexpected exceptions
+            //Catch any other unexpected exceptions
             sendError("An unexpected error occurred.");
         }
     }

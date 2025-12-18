@@ -31,14 +31,14 @@ public class Server {
     public void closeServerSocket() {
         try {
             if (serverSocket != null)
-            serverSocket.close();
+                serverSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     //Server and Client must connect through the same port.
-    //Server must be ran first in order for the client to connect
+    //Server must be run first in order for the client to connect
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(1234);
         Server server = new Server(serverSocket);

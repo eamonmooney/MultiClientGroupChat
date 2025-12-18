@@ -6,7 +6,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-//Class for the client, is ran here in order to add a new user.
+//Class for the client, is run here in order to add a new user.
 public class Client {
     
     private Socket socket;
@@ -21,12 +21,12 @@ public class Client {
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.username = username;
         } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            ConnectionUtils.closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
 
     //User sends a message to the server
-    public void sendMessage() {
+    private void sendMessage() {
         try {
             bufferedWriter.write(username);
             bufferedWriter.newLine();
@@ -41,12 +41,12 @@ public class Client {
                 bufferedWriter.flush();
             }
         } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            ConnectionUtils.closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
 
     //Method is actively listening for a message from the server, using threads allows for this to run alongside the process.
-    public void listenForMessage() {
+    private void listenForMessage() {
         new Thread(() -> {
             String msgFromGroupChat;
 
@@ -55,29 +55,12 @@ public class Client {
                     msgFromGroupChat = bufferedReader.readLine();
                     System.out.println(msgFromGroupChat);
                 } catch (IOException e) {
-                    closeEverything(socket, bufferedReader, bufferedWriter);
+                    ConnectionUtils.closeEverything(socket, bufferedReader, bufferedWriter);
                 }
             }
         }).start();
     }
-
-    //Breaks connection with the server
-    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
-        try{
-            if (bufferedReader != null) {
-                bufferedReader.close();
-            }
-            if (bufferedWriter != null) {
-                bufferedWriter.close();
-            }
-            if(socket != null) {
-                socket.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter your username for the group chat: ");
