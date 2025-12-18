@@ -15,8 +15,8 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-//Each object in this class is responsible for communcating with a client
-//Implementing runnable ensures instances will be executed by a seperate thread.
+//Each object in this class is responsible for communicating with a client
+//Implementing runnable ensures instances will be executed by a separate thread.
 public class ClientHandler implements Runnable {
     
     //Keeps track of all of the clients, allows the capability to broadcast messages to multiple users
@@ -362,7 +362,7 @@ public class ClientHandler implements Runnable {
 
     //Edits the requested message
     public void messageEdit(Integer key, String newMessage) {
-
+    
     }
 
     //Outputs a random message from the specified user.
