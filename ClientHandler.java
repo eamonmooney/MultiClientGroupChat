@@ -1,37 +1,30 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 //Each object in this class is responsible for communicating with a client
 //Implementing runnable ensures instances will be executed by a separate thread.
 public class ClientHandler implements Runnable {
-    
+
     //Keeps track of all of the clients, allows the capability to broadcast messages to multiple users
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
 
     //ArrayList of all the commands that can be used by the client, complete with their own descriptions.
     public static ArrayList<String> commands = new ArrayList<>(Arrays.asList(
-        "/help - Displays all commands that are currently available.", 
-        "/getMessage <Number> - Displays the requested message by message number.",
-        "/messageCount <Username> - Displays how many messages have been sent by the requested username.",
-        "/messageDelete <Number> - Deletes the requested message, You can only delete your own messages.",
-        "/messageEdit <Number> <Message> - Edits the requested message, You can only edit your own messages. [IN DEVELOPMENT]",
-        "/messageRandom <Username> - Outputs a random message from the specified user. [IN DEVELOPMENT]"
+            "/help - Displays all commands that are currently available.",
+            "/getMessage <Number> - Displays the requested message by message number.",
+            "/messageCount <Username> - Displays how many messages have been sent by the requested username.",
+            "/messageDelete <Number> - Deletes the requested message, You can only delete your own messages.",
+            "/messageEdit <Number> <Message> - Edits the requested message, You can only edit your own messages. [IN DEVELOPMENT]",
+            "/messageRandom <Username> - Outputs a random message from the specified user. [IN DEVELOPMENT]"
     ));
-    
+
     //Establishes a connection between the client and the server.
     private Socket socket;
 
@@ -51,7 +44,7 @@ public class ClientHandler implements Runnable {
             //"OutputStreamWriter" = character stream
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            
+
             this.clientUsername = bufferedReader.readLine();
 
             //Adds the current clientHandler to the list
@@ -59,7 +52,7 @@ public class ClientHandler implements Runnable {
 
             broadcastMessage("SERVER: " + clientUsername + " has entered the chat!", true);
 
-            
+
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
@@ -97,17 +90,16 @@ public class ClientHandler implements Runnable {
         }
 
         //Split the Message Contents from the Username and contents by 2 columns            
-      
+
         String[] messageParts = messageToSend.split(":", 2);
         String actualMessage = messageParts.length > 1 ? messageParts[1].trim() : messageToSend;
-      
+
         //Store the corresponding message as the final output
 
         if (!fromServer) {
             Message message = new Message(sender, actualMessage);
             writeLog(message);
-        }
-        else {
+        } else {
             Message message = new Message("SERVER", actualMessage);
             writeLog(message);
         }
@@ -137,14 +129,14 @@ public class ClientHandler implements Runnable {
     //Closes everything
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         removeClientHandler();
-        try{
+        try {
             if (bufferedReader != null) {
                 bufferedReader.close();
             }
             if (bufferedWriter != null) {
                 bufferedWriter.close();
             }
-            if(socket != null) {
+            if (socket != null) {
                 socket.close();
             }
         } catch (IOException e) {
@@ -155,16 +147,17 @@ public class ClientHandler implements Runnable {
     //IMPORTANT NOTE ON THE LOG: Apparently Hashtables are thread-safe and syncronised? Might be more worth it to use this instead of the HashMap
     //SUB NOTE ON THE IMPORTANT NOTE: Do actually look at what a hashtable is
 
-    
+
     //reads and returns the message log
     public HashMap<Integer, Message> readLog() {
         HashMap<Integer, Message> data = new HashMap<>();
 
         try (FileReader reader = new FileReader("chatLog.json")) {
             Gson gson = new Gson();
-            data = gson.fromJson(reader, new TypeToken<HashMap<Integer, Message>>() {}.getType());
+            data = gson.fromJson(reader, new TypeToken<HashMap<Integer, Message>>() {
+            }.getType());
         } catch (FileNotFoundException e) {
-        // File not found, returning empty log
+            // File not found, returning empty log
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -178,7 +171,7 @@ public class ClientHandler implements Runnable {
             log = new HashMap<>(); // Initialize a new HashMap if readLog() fails
         }
         int nextIndex = log.keySet().stream().max(Integer::compare).orElse(-1) + 1;
-        log.put(nextIndex,message);
+        log.put(nextIndex, message);
         Gson gson = new Gson();
         String json = gson.toJson(log);
 
@@ -266,7 +259,7 @@ public class ClientHandler implements Runnable {
             for (String command : commands) {
                 selfMessage(command);
             }
-        }   catch (Exception e) {
+        } catch (Exception e) {
             // Catch any other unexpected exceptions
             sendError("An unexpected error occurred.");
         }
@@ -322,7 +315,7 @@ public class ClientHandler implements Runnable {
 
             if (counter > 0) {
                 String formattedMessage = "SERVER: " + counter + " messages found from " + requestedUsername;
-                broadcastMessage(formattedMessage, true); 
+                broadcastMessage(formattedMessage, true);
                 //Send the output back to the requesting client as it is a command
                 selfMessage(formattedMessage);
             } else {
@@ -362,7 +355,7 @@ public class ClientHandler implements Runnable {
 
     //Edits the requested message
     public void messageEdit(Integer key, String newMessage) {
-    
+
     }
 
     //Outputs a random message from the specified user.
@@ -383,7 +376,7 @@ public class ClientHandler implements Runnable {
         Integer key = parseMessageNumber(parts[1]);
 
         //Validate log existence
-        if (!logValidation(key)){
+        if (!logValidation(key)) {
             return null;
         }
 
